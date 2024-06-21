@@ -23,7 +23,18 @@
 &ri              rd imm
 &rri_sf          rd rn imm sf
 &i               imm
+&rrii            rd rm d r
 
+@regvault       ... ........ . d:1 r:3 ...... rm:5 rd:5 &rrii
+
+CRETK           110 11010110 0 . ... 100000 ..... ..... @regvault
+CRDTK           110 11010110 1 . ... 100000 ..... ..... @regvault
+CREMK           110 11010110 0 . ... 100001 ..... ..... @regvault
+CRDMK           110 11010110 1 . ... 100001 ..... ..... @regvault
+CREAK           110 11010110 0 . ... 100010 ..... ..... @regvault
+CRDAK           110 11010110 1 . ... 100010 ..... ..... @regvault
+CREBK           110 11010110 0 . ... 100011 ..... ..... @regvault
+CRDBK           110 11010110 1 . ... 100011 ..... ..... @regvault
 
 ### Data Processing - Immediate
 

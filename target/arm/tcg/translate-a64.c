@@ -1399,6 +1399,34 @@ static inline AArch64DecodeFn *lookup_disas_fn(const AArch64DecodeTable *table,
  * match up with those in the manual.
  */
 
+#define TRANS_REGVAULT(NAME, FUNC, ...) \
+    static bool trans_##NAME(DisasContext *s, arg_##NAME *a) \
+    {                                                        \
+        TCGv_i64 rm, rd;                                     \
+        uint64_t text, tweak;                                \
+        uint64_t res;                                        \
+                                                             \
+        rm = cpu_reg(s, a->rm);                              \
+        rd = cpu_reg(s, a->rd);                              \
+                                                             \
+        text = (uint64_t)rd;                                 \
+        tweak = (uint64_t)rm;                                \
+                                                             \
+        res = FUNC(text, tweak, 0, 0, 7);                    \
+        cpu_X[a->rd] = (TCGv_i64)res;                        \
+                                                             \
+        return true;                                         \
+    }
+
+TRANS_REGVAULT(CRETK, qarma64_enc);
+TRANS_REGVAULT(CRDTK, qarma64_dec);
+TRANS_REGVAULT(CREMK, qarma64_enc);
+TRANS_REGVAULT(CRDMK, qarma64_dec);
+TRANS_REGVAULT(CREAK, qarma64_enc);
+TRANS_REGVAULT(CRDAK, qarma64_dec);
+TRANS_REGVAULT(CREBK, qarma64_enc);
+TRANS_REGVAULT(CRDBK, qarma64_dec);
+
 static bool trans_B(DisasContext *s, arg_i *a)
 {
     reset_btype(s);
