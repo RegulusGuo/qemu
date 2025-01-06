@@ -25,6 +25,7 @@
 #include "arm_ldst.h"
 #include "semihosting/semihost.h"
 #include "cpregs.h"
+#include "qarma.h"
 
 static TCGv_i64 cpu_X[32];
 static TCGv_i64 cpu_pc;
@@ -2187,6 +2188,8 @@ static void handle_sys(DisasContext *s, bool isread,
         /* Unknown register; this might be a guest error or a QEMU
          * unimplemented feature.
          */
+        // printf("%s access to unsupported AArch64 system register op0:%d op1:%d crn:%d crm:%d op2:%d, key:0x%x\n",
+        //               isread ? "read" : "write", op0, op1, crn, crm, op2, key);
         qemu_log_mask(LOG_UNIMP, "%s access to unsupported AArch64 "
                       "system register op0:%d op1:%d crn:%d crm:%d op2:%d\n",
                       isread ? "read" : "write", op0, op1, crn, crm, op2);

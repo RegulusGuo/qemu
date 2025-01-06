@@ -54,6 +54,20 @@ void raw_write(CPUARMState *env, const ARMCPRegInfo *ri, uint64_t value)
     }
 }
 
+void write_regvault_key(CPUARMState *env, const ARMCPRegInfo *ri, uint64_t value)
+{
+    assert(ri->fieldoffset);
+    if (cpreg_field_is_64bit(ri)) {
+        uint64_t old_value = CPREG_FIELD64(env, ri);
+        CPREG_FIELD64(env, ri) = old_value + 1;
+        fprintf(stderr, "%s: %lx\n", ri->name, CPREG_FIELD64(env, ri));
+    } else {
+        uint32_t old_value = CPREG_FIELD32(env, ri);
+        CPREG_FIELD32(env, ri) = old_value + 1;
+        fprintf(stderr, "%s: %x\n", ri->name, CPREG_FIELD32(env, ri));
+    }
+}
+
 static void *raw_ptr(CPUARMState *env, const ARMCPRegInfo *ri)
 {
     return (char *)env + ri->fieldoffset;
@@ -5589,6 +5603,54 @@ static const ARMCPRegInfo v8_cp_reginfo[] = {
       .opc0 = 3, .opc1 = 0, .crn = 4, .crm = 0, .opc2 = 0,
       .access = PL1_RW,
       .fieldoffset = offsetof(CPUARMState, banked_spsr[BANK_SVC]) },
+    { .name = "scrtkeyl", .state = ARM_CP_STATE_AA64,
+      .type = ARM_CP_ALIAS,
+      .opc0 = 3, .opc1 = 0, .crn = 15, .crm = 10, .opc2 = 0,
+      .access = PL1_RW, .readfn = raw_read, .writefn = raw_write,
+      .resetvalue = 0,
+      .fieldoffset = offsetof(CPUARMState, regvault_keys[0]) },
+    { .name = "scrtkeyh", .state = ARM_CP_STATE_AA64,
+      .type = ARM_CP_ALIAS,
+      .opc0 = 3, .opc1 = 0, .crn = 15, .crm = 10, .opc2 = 1,
+      .access = PL1_RW, .readfn = raw_read, .writefn = raw_write,
+      .resetvalue = 0,
+      .fieldoffset = offsetof(CPUARMState, regvault_keys[1]) },
+    { .name = "scrakeyl", .state = ARM_CP_STATE_AA64,
+      .type = ARM_CP_ALIAS,
+      .opc0 = 3, .opc1 = 0, .crn = 15, .crm = 10, .opc2 = 2,
+      .access = PL1_RW, .readfn = raw_read, .writefn = raw_write,
+      .resetvalue = 0,
+      .fieldoffset = offsetof(CPUARMState, regvault_keys[2]) },
+    { .name = "scrakeyh", .state = ARM_CP_STATE_AA64,
+      .type = ARM_CP_ALIAS,
+      .opc0 = 3, .opc1 = 0, .crn = 15, .crm = 10, .opc2 = 3,
+      .access = PL1_RW, .readfn = raw_read, .writefn = raw_write,
+      .resetvalue = 0,
+      .fieldoffset = offsetof(CPUARMState, regvault_keys[3]) },
+    { .name = "scrbkeyl", .state = ARM_CP_STATE_AA64,
+      .type = ARM_CP_ALIAS,
+      .opc0 = 3, .opc1 = 0, .crn = 15, .crm = 10, .opc2 = 4,
+      .access = PL1_RW, .readfn = raw_read, .writefn = write_regvault_key,
+      .resetvalue = 0,
+      .fieldoffset = offsetof(CPUARMState, regvault_keys[4]) },
+    { .name = "scrbkeyh", .state = ARM_CP_STATE_AA64,
+      .type = ARM_CP_ALIAS,
+      .opc0 = 3, .opc1 = 0, .crn = 15, .crm = 10, .opc2 = 5,
+      .access = PL1_RW, .readfn = raw_read, .writefn = write_regvault_key,
+      .resetvalue = 0,
+      .fieldoffset = offsetof(CPUARMState, regvault_keys[5]) },
+    { .name = "mcrmkeyl", .state = ARM_CP_STATE_AA64,
+      .type = ARM_CP_ALIAS,
+      .opc0 = 3, .opc1 = 0, .crn = 15, .crm = 10, .opc2 = 6,
+      .access = PL2_RW, .readfn = raw_read, .writefn = raw_write,
+      .resetvalue = 0,
+      .fieldoffset = offsetof(CPUARMState, regvault_keys[6]) },
+    { .name = "mcrmkeyh", .state = ARM_CP_STATE_AA64,
+      .type = ARM_CP_ALIAS,
+      .opc0 = 3, .opc1 = 0, .crn = 15, .crm = 10, .opc2 = 7,
+      .access = PL2_RW, .readfn = raw_read, .writefn = raw_write,
+      .resetvalue = 0,
+      .fieldoffset = offsetof(CPUARMState, regvault_keys[7]) },
     /*
      * We rely on the access checks not allowing the guest to write to the
      * state field when SPSel indicates that it's being used as the stack

@@ -290,6 +290,7 @@ typedef struct CPUArchState {
 
     uint64_t elr_el[4]; /* AArch64 exception link regs  */
     uint64_t sp_el[4]; /* AArch64 banked stack pointers */
+    uint64_t regvault_keys[8]; /* RegVault Extension Crypto-Keys */
 
     /* System control coprocessor (cp15) */
     struct {
